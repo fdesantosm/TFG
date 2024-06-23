@@ -1,0 +1,16 @@
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\controller\impl\ClientControllerImpl.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\entity\Client.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\Main.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\entity\dto\ClientDto.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\configuration\SwaggerConfiguration.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\mapper\impl\ClientMapperImpl.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\repository\ClientRepository.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\entity\Example.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\entity\in\ClientInDto.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\service\ClientService.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\mapper\ClientMapper.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\configuration\JpaConfig.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\repository\ExampleRepository.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\controller\ClientControllerApi.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\constant\PathConstants.java
+C:\Users\34671\IdeaProjects\AplicacionTokens\src\main\java\org\application\service\impl\ClientServiceImpl.java
