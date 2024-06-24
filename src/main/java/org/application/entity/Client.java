@@ -1,8 +1,9 @@
 package org.application.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 
 @Data
