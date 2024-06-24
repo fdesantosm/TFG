@@ -1,2 +1,4 @@
 # TFG por Fernando de Santos Montalvo 
 # bn0099
+.idea/
+target/
