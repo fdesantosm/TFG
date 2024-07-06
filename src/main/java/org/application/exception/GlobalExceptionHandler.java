@@ -14,7 +14,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseException.class)
-    public ResponseEntity<ErrorResponse> handleClientAlreadyExistsException(ResponseException ex) {
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(ResponseException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
                 ex.getDescription()
