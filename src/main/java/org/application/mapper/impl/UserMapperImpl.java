@@ -1,15 +1,13 @@
 package org.application.mapper.impl;
 
+import org.application.constant.RoleConstants;
 import org.application.entity.UserEntity;
-import org.application.entity.Rol;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 import org.application.mapper.UserMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 @Component
 public class UserMapperImpl implements UserMapper {
@@ -35,15 +33,8 @@ public class UserMapperImpl implements UserMapper {
         }
         var userDto = new UserDto();
         BeanUtils.copyProperties(userEntity, userDto);
-        userDto.setRoles(mapRolesToString(userEntity.getRoles()));
 
         return userDto;
-    }
-
-    public List<String> mapRolesToString(List<Rol> rols){
-        return rols.stream()
-                .map(Rol::getName)
-                .toList();
     }
 
     public UserEntity map(UserInDto userInDto){
@@ -54,7 +45,7 @@ public class UserMapperImpl implements UserMapper {
                 .username(userInDto.getUsername())
                 .email(userInDto.getEmail())
                 .password(passwordEncoder.encode(userInDto.getPassword()))
-                .roles(new ArrayList<>())
+                .role(RoleConstants.USER)
                 .build();
 
     }

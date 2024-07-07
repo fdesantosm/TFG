@@ -23,14 +23,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(PathConstants.AT + PathConstants.VERIFICATION_ROUTE)
 public interface VerificationController {
 
-    @Operation(tags = "verification", summary = "Crear nuevo usuario", description = "Crear nuevo usuario")
+    @Operation(tags = "verification", summary = "Registrar nuevo usuario", description = "Registar nuevo usuario")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuario creado con éxito",
+            @ApiResponse(responseCode = "201", description = "Usuario registrado con éxito",
                     content = @Content(schema = @Schema(implementation = UserEntity.class))),
             @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")})
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<UserDto> register (@Validated @RequestBody UserInDto userInDto);
 
+
+    @Operation(tags = "verification", summary = "Logear con usuario", description = "Logear con usuario")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuario logeado con éxito",
+                    content = @Content(schema = @Schema(implementation = UserEntity.class))),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")})
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<AuthDto> login(@Validated @RequestBody LoginDto loginDto);
 
