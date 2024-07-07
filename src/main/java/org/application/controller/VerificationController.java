@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.application.constant.PathConstants;
 import org.application.entity.UserEntity;
 import org.application.entity.in.LoginDto;
+import org.application.entity.out.AuthDto;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 import org.springframework.http.MediaType;
@@ -28,9 +29,9 @@ public interface VerificationController {
                     content = @Content(schema = @Schema(implementation = UserEntity.class))),
             @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")})
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDto> register (@Validated @RequestBody UserInDto userInDto);
+    ResponseEntity<UserDto> register (@Validated @RequestBody UserInDto userInDto);
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> login(@Validated @RequestBody LoginDto loginDto);
+    ResponseEntity<AuthDto> login(@Validated @RequestBody LoginDto loginDto);
 
 }

@@ -3,8 +3,10 @@ package org.application.controller.impl;
 import org.application.constant.PathConstants;
 import org.application.controller.VerificationController;
 import org.application.entity.in.LoginDto;
+import org.application.entity.out.AuthDto;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
+import org.application.security.JwtGenerator;
 import org.application.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +25,13 @@ public class VerificationControllerImpl implements VerificationController {
 
     private AuthenticationManager authenticationManager;
     private UserService userService;
+    private JwtGenerator jwtGenerator;
 
     @Autowired
-    public VerificationControllerImpl(AuthenticationManager authenticationManager, UserService userService) {
+    public VerificationControllerImpl(AuthenticationManager authenticationManager, UserService userService, JwtGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.jwtGenerator =jwtGenerator;
     }
 
     public ResponseEntity<UserDto> register (UserInDto userInDto){
@@ -36,11 +40,12 @@ public class VerificationControllerImpl implements VerificationController {
                 .contentType(MediaType.APPLICATION_JSON).body(savedUser);
     }
 
-    public ResponseEntity<String> login(LoginDto loginDto){
+    public ResponseEntity<AuthDto> login(LoginDto loginDto){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("Nombre de usuario correcto, login completado con exito", HttpStatus.OK);
+        String token = jwtGenerator.generateToken(authentication);
+        return new ResponseEntity<>(new AuthDto(token), HttpStatus.OK);
    }
 }
