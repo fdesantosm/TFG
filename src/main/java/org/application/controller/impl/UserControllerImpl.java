@@ -20,8 +20,8 @@ public class UserControllerImpl implements UserControllerApi {
         this.userService = userService;
     }
 
-    public String testDePrueba(){
-        return "Hola Mundo";
+    public ResponseEntity<String> testDePrueba(){
+        return new ResponseEntity<>("Hola Mundo", HttpStatus.OK);
     }
 
 

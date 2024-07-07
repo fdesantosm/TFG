@@ -1,6 +1,7 @@
 package org.application.configuration;
 
 import org.application.constant.PathConstants;
+import org.application.security.CustomUserDetailService;
 import org.application.security.JwtAuthEntryPoint;
 import org.application.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -25,37 +26,32 @@ public class SecurityConfig {
 
     private JwtAuthEntryPoint authEntryPoint;
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private CustomUserDetailService customUserDetailService;
 
     @Autowired
-    public SecurityConfig(JwtAuthEntryPoint authEntryPoint, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthEntryPoint authEntryPoint, JwtAuthenticationFilter jwtAuthenticationFilter, CustomUserDetailService customUserDetailService) {
         this.authEntryPoint = authEntryPoint;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customUserDetailService = customUserDetailService;
     }
 
 
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
-        http
-                .csrf().disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(authEntryPoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers(new AntPathRequestMatcher(
-                        PathConstants.REGISTER_ROUTE, "POST")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher(
-                        PathConstants.LOGIN_ROUTE, "POST")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher(
-                        PathConstants.PRUEBA_ROUTE, "GET")).authenticated()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .httpBasic();
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+       return http.csrf(AbstractHttpConfigurer::disable)
+               .authorizeHttpRequests(req->req
+                               .requestMatchers(PathConstants.REGISTER_ROUTE, PathConstants.LOGIN_ROUTE).permitAll()
+                               .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                               .requestMatchers(PathConstants.PRUEBA_ROUTE).hasAuthority("ADMIN")
+                               .anyRequest()
+                               .authenticated())
+               .exceptionHandling(exception -> exception
+                       .authenticationEntryPoint(authEntryPoint))
+               .sessionManagement(session->session
+                       .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+               .userDetailsService(customUserDetailService)
+               .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+               .build();
     }
 
     @Bean

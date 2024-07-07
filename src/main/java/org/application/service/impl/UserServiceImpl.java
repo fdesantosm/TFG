@@ -1,13 +1,11 @@
 package org.application.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.application.entity.UserEntity;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 import org.application.exception.ResponseException;
 import org.application.mapper.UserMapper;
 import org.application.repository.UserRepository;
-import org.application.repository.RolRepository;
 import org.application.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,14 +18,12 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final RolRepository rolRepository;
 
     private final UserMapper mapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper mapper, RolRepository rolRepository){
+    public UserServiceImpl(UserRepository userRepository, UserMapper mapper){
         this.userRepository = userRepository;
-        this.rolRepository = rolRepository;
         this.mapper = mapper;
     }
 
@@ -45,22 +41,10 @@ public class UserServiceImpl implements UserService {
         return Optional.of(userInDto)
                 .map(this::validateName)
                 .map(mapper::map)
-                .map(this::assignRol)
                 .map(userRepository::save)
                 .map(mapper::map)
                 .orElseThrow(() -> new ResponseException(
                         "Bad mapping", HttpStatus.BAD_REQUEST));
-    }
-
-    private UserEntity assignRol(UserEntity userEntity){
-        return Optional.of("user")
-                .flatMap(rolRepository::findByName)
-                .map(rol -> {
-                    userEntity.addRol(rol);
-                    return userEntity;
-                })
-                .orElseThrow(() -> new ResponseException(
-                        "El Rol user no existe y no se puede crear un usuario nuevo.", HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     private UserInDto validateName(UserInDto userInDto) {

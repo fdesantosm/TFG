@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
+import org.application.constant.RoleConstants;
 
 @Data
 @Builder
@@ -20,6 +19,6 @@ public class UserDto {
 
     private String password;
 
-    private List<String> roles;
+    private RoleConstants role;
 
 }
