@@ -10,6 +10,13 @@ CREATE TABLE IF NOT EXISTS users (
     PRIMARY KEY (id)
 );
 
-
-
 INSERT INTO users (username, email, password, role) VALUES ('tester', 'tfg@example.com', '$2a$10$xpdiB47q5sWsM3krCTMu9.RUmKcY5KGGa1LpWjwy48O/uOwnacP96', 'ADMIN');--1234556
+
+CREATE SEQUENCE file_tokens_seq START WITH 1 INCREMENT BY 1;
+CREATE TABLE IF NOT EXISTS file_tokens (
+    id BIGINT NOT NULL DEFAULT nextval('file_tokens_seq'),
+    token VARCHAR(255) NOT NULL UNIQUE,
+    file_identifier VARCHAR(255) NOT NULL,
+    expiration_time TIMESTAMP NOT NULL
+);
+
