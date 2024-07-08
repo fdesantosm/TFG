@@ -1,4 +1,4 @@
-package org.application.constant;
+package org.application.entity.enums;
 
 public enum RoleConstants {
     USER,

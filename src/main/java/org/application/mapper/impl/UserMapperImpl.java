@@ -1,6 +1,6 @@
 package org.application.mapper.impl;
 
-import org.application.constant.RoleConstants;
+import org.application.entity.enums.RoleConstants;
 import org.application.entity.UserEntity;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
