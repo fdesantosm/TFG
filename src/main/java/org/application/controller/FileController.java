@@ -10,7 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
-                                             @RequestParam("tokenDuration") long tokenDuration);
+                                                 @RequestParam("title") String title,
+                                                 @RequestParam("description") String description);
 
     @GetMapping("/download/{token}")
     public ResponseEntity<String> downloadFile(@PathVariable String token);

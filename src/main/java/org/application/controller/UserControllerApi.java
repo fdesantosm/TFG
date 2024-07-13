@@ -9,10 +9,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.application.constant.PathConstants;
 import org.application.entity.UserEntity;
 import org.application.entity.out.UserDto;
-import org.application.entity.in.UserInDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,15 +26,6 @@ public interface UserControllerApi {
     @GetMapping(value = "/prueba", produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<String> testDePrueba();
-
-
-    @Operation(tags = "usuarios", summary = "Crear nuevo usuario", description = "Crear nuevo usuario")
-    @ApiResponse(responseCode = "201", description = "Usuario creado con éxito",
-            content = @Content(schema = @Schema(implementation = UserEntity.class)))
-    @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDto> createUser(@Validated @RequestBody UserInDto userInDto);
-
 
     @Operation(tags = "usuarios", summary = "Buscar usuario por id", description = "Buscar usuario por id")
     @ApiResponse(responseCode = "200", description = "Usuario encontrado",

@@ -17,16 +17,21 @@ import java.time.LocalDateTime;
 public class FileToken {
 
     @Id
-    @SequenceGenerator(name = "users_seq_generator", sequenceName = "users_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq_generator")
+    @SequenceGenerator(name = "file_tokens_seq_generator", sequenceName = "file_tokens_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "file_tokens_seq_generator")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "token", nullable = false, unique = true)
+    @Column(name = "token", nullable = false)
     private String token;
 
-    @Column(name = "file_identifier", nullable = false)
+    @Column(name = "file_identifier")
     private String fileIdentifier;
 
     @Column(name = "expiration_time", nullable = false)
     private LocalDateTime expirationTime;
+
+    @ManyToOne
+    @JoinColumn(name = "file_id", nullable = false)
+    private FileEntity fileEntity;
 }

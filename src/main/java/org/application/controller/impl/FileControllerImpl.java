@@ -3,10 +3,15 @@ package org.application.controller.impl;
 import org.application.constant.DirectoryPathConstants;
 import org.application.controller.FileController;
 import org.application.entity.FileToken;
+import org.application.entity.UserEntity;
+import org.application.service.FileService;
 import org.application.service.FileTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,25 +25,31 @@ import java.util.UUID;
 @RestController
 public class FileControllerImpl implements FileController {
     private FileTokenService fileTokenService;
+    private FileService fileService;
 
     @Autowired
-    public FileControllerImpl(FileTokenService fileTokenService) {
+    public FileControllerImpl(FileTokenService fileTokenService, FileService fileService) {
         this.fileTokenService = fileTokenService;
+        this.fileService = fileService;
     }
 
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
-                                             @RequestParam("tokenDuration") long tokenDuration) {
+                                             @RequestParam("title") String title,
+                                             @RequestParam("description") String description) {
         try {
-            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
-            String fileIdentifier = UUID.randomUUID().toString() + "_" + originalFilename;
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserEntity user = (UserEntity) authentication.getPrincipal();
 
-            File uploadFile = new File(DirectoryPathConstants.UPLOAD_DIR + fileIdentifier);
+            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+            String fileName = UUID.randomUUID().toString() + "_" + originalFilename;
+
+            File uploadFile = new File(DirectoryPathConstants.UPLOAD_DIR + fileName);
             file.transferTo(uploadFile);
 
             // Generate a token for file download with expiration time
-            FileToken fileToken = fileTokenService.createFileToken(fileIdentifier, tokenDuration);
-
-            return ResponseEntity.ok(fileToken.getToken());
+            // FileToken fileToken = fileTokenService.createFileToken(fileIdentifier, tokenDuration);
+            fileService.createFileEntity(title, fileName, description, user);
+            return new ResponseEntity<>("Archivo subido con éxito", HttpStatus.OK);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while uploading file");
         } catch (Exception e) {

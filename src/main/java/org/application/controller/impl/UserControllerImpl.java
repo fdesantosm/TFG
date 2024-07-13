@@ -30,7 +30,6 @@ public class UserControllerImpl implements UserControllerApi {
         return new ResponseEntity<>(userService.findUser(id), HttpStatus.OK);
     }
 
-    @Override
     public ResponseEntity<UserDto> createUser(UserInDto userInDto){
         var savedUser = userService.createUser(userInDto);
         return ResponseEntity.created(URI.create(PathConstants.USER_ROUTE))
