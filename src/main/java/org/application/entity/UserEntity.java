@@ -30,11 +30,11 @@ public class UserEntity implements UserDetails {
     private Long id;
 
     @NotBlank(message = "Username is mandatory")
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @NotBlank(message = "Email is mandatory")
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @NotBlank(message = "Password is mandatory")

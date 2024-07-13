@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginDto {
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "Username is mandatory")
     private String username;
 
     @NotBlank(message = "Password is mandatory")
