@@ -25,9 +25,6 @@ public class FileToken {
     @Column(name = "token", nullable = false)
     private String token;
 
-    @Column(name = "file_identifier")
-    private String fileIdentifier;
-
     @Column(name = "expiration_time", nullable = false)
     private LocalDateTime expirationTime;
 
