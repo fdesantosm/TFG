@@ -2,13 +2,11 @@ package org.application.controller.impl;
 
 import org.application.constant.DirectoryPathConstants;
 import org.application.controller.FileController;
-import org.application.entity.FileToken;
 import org.application.entity.UserEntity;
 import org.application.service.FileService;
 import org.application.service.FileTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,22 +31,17 @@ public class FileControllerImpl implements FileController {
         this.fileService = fileService;
     }
 
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
-                                             @RequestParam("title") String title,
-                                             @RequestParam("description") String description) {
+    public ResponseEntity<String> uploadFile(MultipartFile file, String title, String description) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserEntity user = (UserEntity) authentication.getPrincipal();
-
             String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
             String fileName = UUID.randomUUID().toString() + "_" + originalFilename;
-
             File uploadFile = new File(DirectoryPathConstants.UPLOAD_DIR + fileName);
-            file.transferTo(uploadFile);
 
-            // Generate a token for file download with expiration time
-            // FileToken fileToken = fileTokenService.createFileToken(fileIdentifier, tokenDuration);
+            file.transferTo(uploadFile);
             fileService.createFileEntity(title, fileName, description, user);
+
             return new ResponseEntity<>("Archivo subido con éxito", HttpStatus.OK);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while uploading file");
@@ -59,19 +52,17 @@ public class FileControllerImpl implements FileController {
 
 
     @GetMapping("/download/{token}")
-    public ResponseEntity<String> downloadFile(@PathVariable String token) {
+    public ResponseEntity<String> downloadFile(String token) {
         try {
-            FileToken fileToken = fileTokenService.validateToken(token);
-            String fileIdentifier = fileToken.getFileIdentifier();
 
-            String uploadFilePath = DirectoryPathConstants.UPLOAD_DIR + fileIdentifier;
+            String uploadFilePath = DirectoryPathConstants.UPLOAD_DIR + token;
             File file = new File(uploadFilePath);
 
             if (!file.exists()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
-            String downloadFilePath = DirectoryPathConstants.DOWNLOAD_DIR + fileIdentifier;
+            String downloadFilePath = DirectoryPathConstants.DOWNLOAD_DIR + token;
             File downloadFile = new File(downloadFilePath);
 
             // Copiar el archivo de carga al archivo de descarga
