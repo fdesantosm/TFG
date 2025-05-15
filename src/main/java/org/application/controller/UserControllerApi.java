@@ -13,8 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping(PathConstants.AT + PathConstants.USER_ROUTE)
+@RequestMapping(PathConstants.TFG + PathConstants.USER_ROUTE)
 public interface UserControllerApi {
 
 
@@ -26,6 +28,13 @@ public interface UserControllerApi {
     @GetMapping(value = "/prueba", produces = MediaType.APPLICATION_JSON_VALUE)
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<String> testDePrueba();
+
+    @Operation(tags = "usuarios", summary = "Buscar todos los usuarios", description = "Buscar todos los usuarios")
+    @ApiResponse(responseCode = "200", description = "Usuarios encontrados",
+            content = @Content(schema = @Schema(implementation = UserEntity.class)))
+    @ApiResponse(responseCode = "404", description = "Usuarios no encontrados")
+    @GetMapping(value = "/all", produces = {"application/json"})
+    public ResponseEntity<List<UserEntity>> findAllUsers();
 
     @Operation(tags = "usuarios", summary = "Buscar usuario por id", description = "Buscar usuario por id")
     @ApiResponse(responseCode = "200", description = "Usuario encontrado",

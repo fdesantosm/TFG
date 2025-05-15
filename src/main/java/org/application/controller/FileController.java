@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping(PathConstants.AT + PathConstants.FILE_ROUTE)
+@RequestMapping(PathConstants.TFG + PathConstants.FILE_ROUTE)
 public interface FileController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,

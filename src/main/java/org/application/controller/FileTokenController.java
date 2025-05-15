@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(PathConstants.AT + PathConstants.FILE_TOKEN_ROUTE)
+@RequestMapping(PathConstants.TFG + PathConstants.FILE_TOKEN_ROUTE)
 public interface FileTokenController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

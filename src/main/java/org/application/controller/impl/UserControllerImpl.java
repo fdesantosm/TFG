@@ -2,6 +2,7 @@ package org.application.controller.impl;
 
 import org.application.constant.PathConstants;
 import org.application.controller.UserControllerApi;
+import org.application.entity.UserEntity;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 import org.application.service.UserService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class UserControllerImpl implements UserControllerApi {
@@ -24,15 +26,20 @@ public class UserControllerImpl implements UserControllerApi {
         return new ResponseEntity<>("Hola Mundo", HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<List<UserEntity>> findAllUsers(){
+        return new ResponseEntity<>(userService.findAllUsers(), HttpStatus.OK);
+    }
 
     @Override
     public ResponseEntity<UserDto> findUser(Long id){
         return new ResponseEntity<>(userService.findUser(id), HttpStatus.OK);
     }
 
+
     public ResponseEntity<UserDto> createUser(UserInDto userInDto){
         var savedUser = userService.createUser(userInDto);
-        return ResponseEntity.created(URI.create(PathConstants.AT + PathConstants.USER_ROUTE))
+        return ResponseEntity.created(URI.create(PathConstants.TFG + PathConstants.USER_ROUTE))
                 .contentType(MediaType.APPLICATION_JSON).body(savedUser);
     }
 }

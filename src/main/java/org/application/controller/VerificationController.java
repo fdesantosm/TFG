@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(PathConstants.AT + PathConstants.VERIFICATION_ROUTE)
+@RequestMapping(PathConstants.TFG + PathConstants.VERIFICATION_ROUTE)
 public interface VerificationController {
 
     @Operation(tags = "verification", summary = "Registrar nuevo usuario", description = "Registar nuevo usuario")

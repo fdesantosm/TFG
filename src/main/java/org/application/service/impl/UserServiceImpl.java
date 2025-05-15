@@ -1,16 +1,20 @@
 package org.application.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.application.entity.UserEntity;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 import org.application.exception.ResponseException;
 import org.application.mapper.UserMapper;
 import org.application.repository.UserRepository;
 import org.application.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +31,14 @@ public class UserServiceImpl implements UserService {
         this.mapper = mapper;
     }
 
+    @Override
+    public List<UserEntity> findAllUsers() {
+        List<UserEntity> users = userRepository.findAll();
+        if (users.isEmpty()){
+            throw new ResponseException("No se ha encontrado ningun usuario", HttpStatus.NOT_FOUND);
+        }
+        return users;
+    }
 
     @Override
     public UserDto findUser(Long id) {
