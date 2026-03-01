@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.application.constant.PathConstants;
 import org.application.entity.UserEntity;
 import org.application.entity.in.LoginDto;
@@ -13,14 +14,13 @@ import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(PathConstants.AT + PathConstants.VERIFICATION_ROUTE)
+@RequestMapping(PathConstants.TFG + PathConstants.VERIFICATION_ROUTE)
 public interface VerificationController {
 
     @Operation(tags = "verification", summary = "Registrar nuevo usuario", description = "Registar nuevo usuario")
@@ -29,7 +29,7 @@ public interface VerificationController {
                     content = @Content(schema = @Schema(implementation = UserEntity.class))),
             @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")})
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<UserDto> register (@Validated @RequestBody UserInDto userInDto);
+    ResponseEntity<UserDto> register (@Valid @RequestBody UserInDto userInDto);
 
 
     @Operation(tags = "verification", summary = "Logear con usuario", description = "Logear con usuario")
@@ -38,6 +38,6 @@ public interface VerificationController {
                     content = @Content(schema = @Schema(implementation = UserEntity.class))),
             @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")})
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<AuthDto> login(@Validated @RequestBody LoginDto loginDto);
+    ResponseEntity<AuthDto> login(@Valid @RequestBody LoginDto loginDto);
 
 }

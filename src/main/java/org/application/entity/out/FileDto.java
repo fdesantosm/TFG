@@ -4,19 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.application.entity.enums.RoleConstants;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
-    private Long id;
+public class FileDto {
 
-    private String username;
+    private Long userId;
 
-    private String email;
+    private String title;
 
-    private RoleConstants role;
+    private String description;
+
+    private String publicToken;
 
 }
