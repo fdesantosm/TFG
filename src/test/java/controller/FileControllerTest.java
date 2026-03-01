@@ -33,8 +33,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 
-import static org.application.constant.PathConstants.TEST_DOWNLOAD_DIR;
-import static org.application.constant.PathConstants.TEST_UPLOAD_DIR;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -96,10 +94,6 @@ class FileControllerTest {
         Files.deleteIfExists(file);
       }
     }
-  }
-  private void prepareDirectories() throws IOException {
-    clearDirectory(TEST_UPLOAD_DIR);
-    clearDirectory(TEST_DOWNLOAD_DIR);
   }
 
 
