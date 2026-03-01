@@ -26,20 +26,31 @@ public class UserControllerImpl implements UserControllerApi {
         return new ResponseEntity<>("Hola Mundo", HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<List<UserEntity>> findAllUsers(){
-        return new ResponseEntity<>(userService.findAllUsers(), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<UserDto> findUser(Long id){
-        return new ResponseEntity<>(userService.findUser(id), HttpStatus.OK);
-    }
-
 
     public ResponseEntity<UserDto> createUser(UserInDto userInDto){
         var savedUser = userService.createUser(userInDto);
         return ResponseEntity.created(URI.create(PathConstants.TFG + PathConstants.USER_ROUTE))
                 .contentType(MediaType.APPLICATION_JSON).body(savedUser);
     }
+
+    @Override
+    public ResponseEntity<UserDto> findUser(String username, String email) {
+        if ((username == null || username.isEmpty()) && (email == null || email.isEmpty())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return userService.findUser(username, email)
+          .map(ResponseEntity::ok)
+          .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
+    @Override
+    public ResponseEntity<List<UserEntity>> findAllUsers(){
+        return new ResponseEntity<>(userService.findAllUsers(), HttpStatus.OK);
+    }
+
+
+
+
+
 }

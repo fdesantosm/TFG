@@ -38,5 +38,11 @@ CREATE TABLE IF NOT EXISTS file_tokens (
     file_id BIGINT NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY (file_id) REFERENCES files (id)
-
 );
+
+INSERT INTO users (id, username, email, password, role) VALUES
+(14, 'file_tester', 'tfg@example', '$3a$11$xqdiB57q6sWsM4krCTMv9.RUmKdY5KGGb1LpWjxy48O/vOwoacQ9', 'USER'),
+(4, 'username4', 'tfg4@mail', '$3a$11$xqdiB57q6sWsM4krCTMv9.RUmKdY5KGGb1LpWjxy48O/vOwoacQ9', 'USER');
+
+INSERT INTO files (id, title, file_name, description, public_token, visible, user_id) VALUES
+(1, 'File 1', 'file1.txt', 'Description for this file', 'token1', true, 4);

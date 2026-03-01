@@ -3,8 +3,8 @@ package org.application.controller.impl;
 import org.application.constant.DirectoryPathConstants;
 import org.application.controller.FileController;
 import org.application.entity.UserEntity;
+import org.application.entity.out.FileDto;
 import org.application.service.FileService;
-import org.application.service.FileTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,16 +18,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 public class FileControllerImpl implements FileController {
-    private FileTokenService fileTokenService;
     private FileService fileService;
 
     @Autowired
-    public FileControllerImpl(FileTokenService fileTokenService, FileService fileService) {
-        this.fileTokenService = fileTokenService;
+    public FileControllerImpl( FileService fileService) {
         this.fileService = fileService;
     }
 
@@ -45,34 +44,35 @@ public class FileControllerImpl implements FileController {
             return new ResponseEntity<>("Archivo subido con éxito", HttpStatus.OK);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while uploading file");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred");
+
         }
     }
 
+    public ResponseEntity<String> downloadFile(String token) throws IOException {
 
-    @GetMapping("/download/{token}")
-    public ResponseEntity<String> downloadFile(String token) {
+        String uploadFilePath = DirectoryPathConstants.UPLOAD_DIR + token;
+        File file = new File(uploadFilePath);
+
+        if (!file.exists()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Archivo no encontrado");
+        }
+
+        String downloadFilePath = DirectoryPathConstants.DOWNLOAD_DIR + token;
+        File downloadFile = new File(downloadFilePath);
+
+        Files. copy(file.toPath(), downloadFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        return ResponseEntity.ok("Se ha completado la descarga con éxito");
+    }
+
+    public ResponseEntity<List<FileDto>> findPublicFilesFromUser(String username){
         try {
-
-            String uploadFilePath = DirectoryPathConstants.UPLOAD_DIR + token;
-            File file = new File(uploadFilePath);
-
-            if (!file.exists()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-
-            String downloadFilePath = DirectoryPathConstants.DOWNLOAD_DIR + token;
-            File downloadFile = new File(downloadFilePath);
-
-            // Copiar el archivo de carga al archivo de descarga
-            Files.copy(file.toPath(), downloadFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-            return ResponseEntity.ok("Se ha completado la descarga con éxito");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            List<FileDto> files = fileService.findPublicFilesFromUser(username);
+            return ResponseEntity.ok(files);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+              .status(HttpStatus.NOT_FOUND)
+              .build();
         }
     }
 }

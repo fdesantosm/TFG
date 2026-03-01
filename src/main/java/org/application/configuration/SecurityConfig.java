@@ -41,12 +41,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
        return http.csrf(AbstractHttpConfigurer::disable)
                .authorizeHttpRequests(req->req
-                               .requestMatchers(PathConstants.REGISTER_ROUTE, PathConstants.LOGIN_ROUTE).permitAll()
-                               .requestMatchers(PathConstants.REGISTER_ROUTE, PathConstants.DOWNLOAD_ROUTE).hasAuthority(AuthorityConstants.ADMIN)
-                               .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                               .requestMatchers(PathConstants.PRUEBA_ROUTE).hasAuthority(AuthorityConstants.ADMIN)
-                               .anyRequest()
-                               .authenticated())
+                   .requestMatchers(PathConstants.REGISTER_ROUTE, PathConstants.LOGIN_ROUTE).permitAll()
+                   .requestMatchers(PathConstants.REGISTER_ROUTE, PathConstants.DOWNLOAD_ROUTE).hasAuthority(AuthorityConstants.ADMIN)
+                   .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                   .requestMatchers(PathConstants.PRUEBA_ROUTE).hasAuthority(AuthorityConstants.ADMIN)
+                   .requestMatchers("/tfg/user/all/**").hasAuthority(AuthorityConstants.USER)
+                   .anyRequest()
+                   .authenticated())
                .exceptionHandling(exception -> exception
                        .authenticationEntryPoint(authEntryPoint))
                .sessionManagement(session->session

@@ -16,8 +16,16 @@ public class PathConstants {
      * Routes for security configuration
      */
     public static final String REGISTER_ROUTE = "/tfg/verification/register/**";
-    public static final String LOGIN_ROUTE = "tfg/verification/login/**";
-    public static final String PRUEBA_ROUTE = "tfg/user/prueba/**";
-    public static final String DOWNLOAD_ROUTE = "tfg/file/download/**";
+    public static final String LOGIN_ROUTE = "/tfg/verification/login/**";
+    public static final String PRUEBA_ROUTE = "/tfg/user/prueba/**";
+    public static final String DOWNLOAD_ROUTE = "/tfg/file/download/**";
+
+    /**
+     * Routes for tests
+     */
+    public static final String TEST_UPLOAD_DIR =
+      System.getProperty("java.io.tmpdir") + "/tfg_test_upload/";
+    public static final String TEST_DOWNLOAD_DIR =
+      System.getProperty("java.io.tmpdir") + "/tfg_test_download/";
 
 }

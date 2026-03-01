@@ -21,50 +21,60 @@ import java.util.Optional;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    private final UserMapper mapper;
+  private final UserMapper mapper;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper mapper){
-        this.userRepository = userRepository;
-        this.mapper = mapper;
-    }
 
-    @Override
-    public List<UserEntity> findAllUsers() {
-        List<UserEntity> users = userRepository.findAll();
-        if (users.isEmpty()){
-            throw new ResponseException("No se ha encontrado ningun usuario", HttpStatus.NOT_FOUND);
-        }
-        return users;
-    }
+  @Autowired
+  public UserServiceImpl(UserRepository userRepository, UserMapper mapper) {
+    this.userRepository = userRepository;
+    this.mapper = mapper;
+  }
 
-    @Override
-    public UserDto findUser(Long id) {
-        return Optional.of(id)
-                .flatMap(userRepository::findById)
-                .map(mapper::map)
-                .orElseThrow(() -> new ResponseException(
-                        "No se ha encontrado ningun usuario con el id: " +  id, HttpStatus.NOT_FOUND));
-    }
+  public UserDto createUser(UserInDto userInDto) {
+    return Optional.of(userInDto)
+      .map(this::validateName)
+      .map(this::validateEmail)
+      .map(mapper::map)
+      .map(userRepository::save)
+      .map(mapper::map)
+      .orElseThrow(() -> new ResponseException(
+        "Bad mapping", HttpStatus.BAD_REQUEST));
+  }
 
-    public UserDto createUser(UserInDto userInDto) {
-        return Optional.of(userInDto)
-                .map(this::validateName)
-                .map(mapper::map)
-                .map(userRepository::save)
-                .map(mapper::map)
-                .orElseThrow(() -> new ResponseException(
-                        "Bad mapping", HttpStatus.BAD_REQUEST));
-    }
+  @Override
+  public Optional<UserDto> findUser(String username, String email) {
+    return userRepository
+      .findByUsernameOrEmail(username, email)
+      .map(user -> UserDto.builder()
+        .id(user.getId())
+        .username(user.getUsername())
+        .email(user.getEmail())
+        .role(user.getRole())
+        .build());
+  }
 
-    private UserInDto validateName(UserInDto userInDto) {
-        return Optional.of(userInDto.getUsername())
-                .map(userRepository::findByUsername)
-                .filter(Optional::isEmpty)
-                .map(given -> userInDto)
-                .orElseThrow(() -> new ResponseException(
-                        "Usuario con el nombre '" + userInDto.getUsername() + "' ya existe.", HttpStatus.BAD_REQUEST));
-    }
+  @Override
+  public List<UserEntity> findAllUsers() {
+   return userRepository.findAll();
+  }
+
+  private UserInDto validateName(UserInDto userInDto) {
+    return Optional.of(userInDto.getUsername())
+        .map(userRepository::findByUsername)
+        .filter(Optional::isEmpty)
+        .map(given -> userInDto)
+        .orElseThrow(() -> new ResponseException(
+            "Usuario con el nombre '" + userInDto.getUsername() + "' ya existe.", HttpStatus.CONFLICT));
+  }
+
+  private UserInDto validateEmail(UserInDto userInDto) {
+    return Optional.of(userInDto.getEmail())
+      .map(userRepository::findByEmail)
+      .filter(Optional::isEmpty)
+      .map(given -> userInDto)
+      .orElseThrow(() -> new ResponseException(
+        "Usuario con el email '" + userInDto.getEmail() + "' ya existe.", HttpStatus.CONFLICT));
+  }
 }

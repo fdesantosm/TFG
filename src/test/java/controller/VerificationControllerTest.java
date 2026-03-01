@@ -1,6 +1,5 @@
 package controller;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.application.Main;
 import org.application.constant.PathConstants;
@@ -24,6 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = Main.class)
@@ -52,7 +53,7 @@ class VerificationControllerTest{
 
     @BeforeAll
     static void setupDatabase(@Autowired JdbcTemplate jdbcTemplate) throws Exception {
-        String sql = new String(Files.readAllBytes(Paths.get("src/test/resources/sqlScripts/setup_database.sql")));
+        String sql = new String(Files.readAllBytes(Paths.get("src/test/resources/sqlScripts/setup_database_user_controller.sql")));
         jdbcTemplate.execute(sql);
         System.out.println("Base de datos configurada correctamente.");
     }
@@ -70,6 +71,7 @@ class VerificationControllerTest{
     void setupMockMvc() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
+
     @Test
     void register_whenPositiveRegister_createUser() throws Exception{
         var userInDto = UserInDto.builder()
@@ -87,9 +89,63 @@ class VerificationControllerTest{
                                 .content(asJson(userInDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+          .andExpect(jsonPath("$.username").value("Asteroide de kebabs"))
+          .andExpect(jsonPath("$.email").value("mrtartariah@algo.com"))
+          .andExpect(jsonPath("$.password").doesNotExist());
     }
 
+    @Test
+    void register_whenUserAlreadyExists_return409() throws Exception{
+        var userInDto = UserInDto.builder()
+          .username("UsuarioExistente")
+          .password("password1234")
+          .email("correoduplicado@gmail.com")
+          .build();
+
+        mockMvc.perform(
+            post(PathConstants.TFG + PathConstants.VERIFICATION_ROUTE + "/register")
+              .content(asJson(userInDto))
+              .contentType(MediaType.APPLICATION_JSON)
+              .accept(MediaType.APPLICATION_JSON))
+          .andExpect(status().isCreated());
+
+        mockMvc.perform(
+            post(PathConstants.TFG + PathConstants.VERIFICATION_ROUTE + "/register")
+              .content(asJson(userInDto))
+              .contentType(MediaType.APPLICATION_JSON)
+              .accept(MediaType.APPLICATION_JSON))
+          .andExpect(status().isConflict());
+    }
+
+    @Test
+    void login_whenCredentialsAreValid_returnToken() throws Exception {
+        var loginDto = new LoginDto();
+        loginDto.setUsername("tester");
+        loginDto.setPassword("1234556");
+
+        mockMvc.perform(post(PathConstants.TFG + PathConstants.VERIFICATION_ROUTE + "/login")
+            .content(asJson(loginDto))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+          .andExpect(jsonPath("$.accessToken").exists())
+          .andExpect(jsonPath("$.accessToken").isNotEmpty())
+          .andExpect(jsonPath("$.tokenType").value("Bearer "));
+    }
+
+    @Test
+    void login_whenCredentialsAreInvalid_returnUnauthorized401() throws Exception {
+        var loginDto = new LoginDto();
+        loginDto.setUsername("tester");
+        loginDto.setPassword("wrongPassword");
+
+        mockMvc.perform(post(PathConstants.TFG + PathConstants.VERIFICATION_ROUTE + "/login")
+            .content(asJson(loginDto))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+          .andDo(print())
+          .andExpect(status().isUnauthorized());
+    }
 
     private static String asJson(Object o){
         try{
