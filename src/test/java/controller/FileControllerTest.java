@@ -46,7 +46,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FileControllerTest {
+class FileControllerTest {
 
   @Autowired
   private WebApplicationContext webApplicationContext;
@@ -227,16 +227,15 @@ public class FileControllerTest {
   }
 
   @Test
-  void shouldReturn404_whenUserDoesNotExist() throws Exception {
+  void findPublicFilesFromUser_whenUserDoesntHavePublicFiles_shouldReturn404() throws Exception {
 
     String username = "username5";
 
     when(fileService.findPublicFilesFromUser(username))
-      .thenThrow(new RuntimeException("Usuario no encontrado"));
+      .thenThrow(new RuntimeException("Archivos públicos no encontrados para el usuario: " + username));
 
     mockMvc.perform(get(PathConstants.TFG + PathConstants.FILE_ROUTE + "/publicFiles/" + username))
       .andExpect(status().isNotFound());
   }
 
-  /// ////Aqui
 }
