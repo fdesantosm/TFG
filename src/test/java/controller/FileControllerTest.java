@@ -33,8 +33,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 
-import static org.application.constant.PathConstants.TEST_DOWNLOAD_DIR;
-import static org.application.constant.PathConstants.TEST_UPLOAD_DIR;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,7 +44,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FileControllerTest {
+class FileControllerTest {
 
   @Autowired
   private WebApplicationContext webApplicationContext;
@@ -96,10 +94,6 @@ public class FileControllerTest {
         Files.deleteIfExists(file);
       }
     }
-  }
-  private void prepareDirectories() throws IOException {
-    clearDirectory(TEST_UPLOAD_DIR);
-    clearDirectory(TEST_DOWNLOAD_DIR);
   }
 
 
@@ -227,16 +221,15 @@ public class FileControllerTest {
   }
 
   @Test
-  void shouldReturn404_whenUserDoesNotExist() throws Exception {
+  void findPublicFilesFromUser_whenUserDoesntHavePublicFiles_shouldReturn404() throws Exception {
 
     String username = "username5";
 
     when(fileService.findPublicFilesFromUser(username))
-      .thenThrow(new RuntimeException("Usuario no encontrado"));
+      .thenThrow(new RuntimeException("Archivos públicos no encontrados para el usuario: " + username));
 
     mockMvc.perform(get(PathConstants.TFG + PathConstants.FILE_ROUTE + "/publicFiles/" + username))
       .andExpect(status().isNotFound());
   }
 
-  /// ////Aqui
 }
