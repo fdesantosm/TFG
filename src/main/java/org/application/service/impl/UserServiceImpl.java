@@ -3,6 +3,7 @@ package org.application.service.impl;
 import lombok.extern.slf4j.Slf4j;
 
 import org.application.entity.UserEntity;
+import org.application.entity.in.PasswordDto;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 import org.application.exception.ResponseException;
@@ -12,6 +13,7 @@ import org.application.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +23,16 @@ import java.util.Optional;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+  private PasswordEncoder passwordEncoder;
+
   private final UserRepository userRepository;
 
   private final UserMapper mapper;
 
 
   @Autowired
-  public UserServiceImpl(UserRepository userRepository, UserMapper mapper) {
+  public UserServiceImpl(UserRepository userRepository, UserMapper mapper, PasswordEncoder passwordEncoder) {
+    this.passwordEncoder = passwordEncoder;
     this.userRepository = userRepository;
     this.mapper = mapper;
   }
@@ -56,8 +61,15 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserEntity> findAllUsers() {
-   return userRepository.findAll();
+  public List<UserDto> findAllUsers() {
+   return userRepository.findAll()
+     .stream().map(user ->UserDto.builder()
+       .id(user.getId())
+       .username(user.getUsername())
+       .email(user.getEmail())
+       .role(user.getRole())
+       .build())
+     .toList();
   }
 
   private UserInDto validateName(UserInDto userInDto) {
@@ -76,5 +88,16 @@ public class UserServiceImpl implements UserService {
       .map(given -> userInDto)
       .orElseThrow(() -> new ResponseException(
         "Usuario con el email '" + userInDto.getEmail() + "' ya existe.", HttpStatus.CONFLICT));
+  }
+
+  public void changePassword(String username, PasswordDto password) {
+    UserEntity user = userRepository.findByUsername(username)
+      .orElseThrow(() -> new ResponseException("User not found", HttpStatus.NOT_FOUND));
+    if (!passwordEncoder.matches(password.getOldPassword(), user.getPassword())) {
+      throw new ResponseException("Current password is incorrect", HttpStatus.BAD_REQUEST);
+    }
+
+    user.setPassword(passwordEncoder.encode(password.getNewPassword()));
+    userRepository.save(user);
   }
 }

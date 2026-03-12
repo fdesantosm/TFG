@@ -3,12 +3,14 @@ package controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.application.Main;
 import org.application.constant.PathConstants;
+import org.application.entity.in.PasswordDto;
 import org.application.entity.in.UserInDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -33,6 +35,9 @@ class UserControllerTest {
   private WebApplicationContext webApplicationContext;
 
   private MockMvc mockMvc;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @BeforeAll
   static void setupDatabase(@Autowired JdbcTemplate jdbcTemplate) throws Exception {
@@ -262,6 +267,34 @@ class UserControllerTest {
         get(PathConstants.TFG + PathConstants.USER_ROUTE)
           .contentType(MediaType.APPLICATION_JSON)
           .accept(MediaType.APPLICATION_JSON))
+      .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(username = "user10")
+  void changePassword_whenCorrectPassword_ShouldReturn204() throws Exception {
+
+    PasswordDto dto = new PasswordDto("password", "newPassword");
+
+    mockMvc.perform(
+        patch(PathConstants.TFG + PathConstants.USER_ROUTE + "/me/password")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(dto))
+      )
+      .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @WithMockUser(username = "user10")
+  void changePassword_whenOldPasswordIncorrect_shouldReturn400() throws Exception {
+
+    PasswordDto dto = new PasswordDto("wrongPassword", "newPassword");
+
+    mockMvc.perform(
+        patch(PathConstants.TFG + PathConstants.USER_ROUTE + "/me/password")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(dto))
+      )
       .andExpect(status().isBadRequest());
   }
 

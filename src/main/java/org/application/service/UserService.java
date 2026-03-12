@@ -1,6 +1,6 @@
 package org.application.service;
 
-import org.application.entity.UserEntity;
+import org.application.entity.in.PasswordDto;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 
@@ -13,6 +13,8 @@ public interface UserService {
 
     public Optional<UserDto> findUser(String username, String email);
 
-    public List<UserEntity> findAllUsers();
+    public List<UserDto> findAllUsers();
+
+    public void changePassword(String username, PasswordDto password);
 
 }
