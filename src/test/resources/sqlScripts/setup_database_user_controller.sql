@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (id, username, email, password, role) VALUES (13, 'tester', 'tfg@example.com', '$2a$10$xpdiB47q5sWsM3krCTMu9.RUmKcY5KGGa1LpWjwy48O/uOwnacP96', 'ADMIN');--1234556
+INSERT INTO users (id, username, email, password, role) VALUES (10, 'user10', 'tfg10@example.com', '$2a$10$BMe2Xn8sCQVGZA0F6OD/A.rNXcGoANCwV8mhra3.e9fnM70rL6jeu', 'USER');
 
 CREATE SEQUENCE IF NOT EXISTS files_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE IF NOT EXISTS files (

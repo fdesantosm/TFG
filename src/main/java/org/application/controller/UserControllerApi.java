@@ -6,12 +6,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.application.constant.PathConstants;
 import org.application.entity.UserEntity;
+import org.application.entity.in.PasswordDto;
 import org.application.entity.in.UserInDto;
 import org.application.entity.out.UserDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,9 +71,21 @@ public interface UserControllerApi {
     @ApiResponse(responseCode = "404", description = "Usuarios no encontrados")
   })
   @GetMapping(value = "/all", produces = {"application/json"})
-  public ResponseEntity<List<UserEntity>> findAllUsers();
+  public ResponseEntity<List<UserDto>> findAllUsers();
 
 
+  @Operation( tags = "users", summary = "Cambiar contraseña", description = "Cambiar la contraseña de su usuario"
+  )
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "204", description = "Contraseña actualizada correctamente"),
+    @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+    @ApiResponse(responseCode = "401", description = "No autenticado"),
+    @ApiResponse(responseCode = "403", description = "No tiene permisos suficientes"),
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+  })
+  @PatchMapping(value = "/me/password", consumes = "application/json")
+  public ResponseEntity<Void> updatePassword( @AuthenticationPrincipal UserDetails userDetails,
+                                              @RequestBody @Valid PasswordDto dto);
 
 
 }

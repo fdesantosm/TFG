@@ -2,13 +2,14 @@ package org.application.controller.impl;
 
 import org.application.constant.PathConstants;
 import org.application.controller.UserControllerApi;
-import org.application.entity.UserEntity;
+import org.application.entity.in.PasswordDto;
 import org.application.entity.out.UserDto;
 import org.application.entity.in.UserInDto;
 import org.application.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -45,12 +46,13 @@ public class UserControllerImpl implements UserControllerApi {
 
 
     @Override
-    public ResponseEntity<List<UserEntity>> findAllUsers(){
+    public ResponseEntity<List<UserDto>> findAllUsers(){
         return new ResponseEntity<>(userService.findAllUsers(), HttpStatus.OK);
     }
 
-
-
-
-
+    @Override
+    public ResponseEntity<Void> updatePassword(UserDetails user, PasswordDto dto) {
+        userService.changePassword(user.getUsername(), dto);
+        return ResponseEntity.noContent().build();
+    }
 }

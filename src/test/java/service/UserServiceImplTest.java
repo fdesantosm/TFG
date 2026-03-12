@@ -1,6 +1,7 @@
 package service;
 
 import org.application.entity.UserEntity;
+import org.application.entity.in.PasswordDto;
 import org.application.entity.in.UserInDto;
 import org.application.entity.out.UserDto;
 import org.application.exception.ResponseException;
@@ -14,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +31,9 @@ class UserServiceImplTest {
 
   @Mock
   private UserMapper mapper;
+
+  @Mock
+  private PasswordEncoder passwordEncoder;
 
   @InjectMocks
   private UserServiceImpl userService;
@@ -61,7 +66,7 @@ class UserServiceImplTest {
 
     when(userRepository.findAll()).thenReturn(List.of(user1));
 
-    List<UserEntity> result = userService.findAllUsers();
+    List<UserDto> result = userService.findAllUsers();
 
     assertEquals(1, result.size());
     verify(userRepository).findAll();
@@ -72,7 +77,7 @@ class UserServiceImplTest {
 
     when(userRepository.findAll()).thenReturn(List.of());
 
-    List<UserEntity> result = userService.findAllUsers();
+    List<UserDto> result = userService.findAllUsers();
 
     assertEquals(0, result.size());
     verify(userRepository).findAll();
@@ -155,4 +160,69 @@ class UserServiceImplTest {
 
     verify(userRepository, never()).save(any());
   }
+
+  @Test
+  void changePassword_whenNewPasswordOk_changePasswordSuccessfully() {
+
+    UserEntity user = UserEntity.builder()
+      .id(7L)
+      .username("user7")
+      .password("encodedOldPassword")
+      .build();
+
+    PasswordDto dto = new PasswordDto("oldPassword", "newPassword");
+
+    when(userRepository.findByUsername("user7")).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches("oldPassword", "encodedOldPassword")).thenReturn(true);
+    when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+
+    userService.changePassword("user7", dto);
+
+    verify(userRepository).save(user);
+    assertEquals("encodedNewPassword", user.getPassword());
+  }
+
+  @Test
+  void changePassword_whenUserNotFound_throw404() {
+
+    PasswordDto dto = new PasswordDto("oldPassword", "newPassword");
+
+    when(userRepository.findByUsername("user8")).thenReturn(Optional.empty());
+
+    ResponseException ex = assertThrows(
+      ResponseException.class, () -> userService.changePassword("user8", dto)
+    );
+
+    assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+
+    verify(userRepository, never()).save(any());
+  }
+
+  @Test
+  void changePassword_whenCurrentPasswordWrong_throwException() {
+
+    UserEntity user = UserEntity.builder()
+      .id(9L)
+      .username("user9")
+      .password("encodedOldPassword")
+      .build();
+
+    PasswordDto dto = new PasswordDto("wrongPassword", "newPassword");
+
+    when(userRepository.findByUsername("user9")).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches("wrongPassword", "encodedOldPassword")).thenReturn(false);
+
+    ResponseException ex = assertThrows(
+      ResponseException.class,
+      () -> userService.changePassword("user9", dto)
+    );
+
+    assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
+
+    verify(userRepository, never()).save(any());
+  }
+
+
+
+  /// /////Revisar test y hacer los siquientes casos/////
 }
