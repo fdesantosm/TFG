@@ -14,6 +14,7 @@ import org.application.entity.in.UserInDto;
 import org.application.entity.out.UserDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -87,5 +88,25 @@ public interface UserControllerApi {
   public ResponseEntity<Void> updatePassword( @AuthenticationPrincipal UserDetails userDetails,
                                               @RequestBody @Valid PasswordDto dto);
 
+  @Operation(tags = "users", summary = "Eliminar usuario", description = "Elimina su propia cuenta")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente"),
+    @ApiResponse(responseCode = "401", description = "No autenticado"),
+    @ApiResponse(responseCode = "403", description = "No tiene permisos suficientes"),
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+  })
+  @DeleteMapping("/me")
+  public ResponseEntity<Void> deleteOwnUser(@AuthenticationPrincipal UserDetails userDetails);
 
+
+  @Operation(tags = "users", summary = "Eliminar usuario (admin)", description = "Elimina cualquier usuario")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente"),
+    @ApiResponse(responseCode = "401", description = "No autenticado"),
+    @ApiResponse(responseCode = "403", description = "No tiene permisos suficientes"),
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+  })
+  @DeleteMapping("/{username}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<Void> deleteUserByAdmin(@PathVariable String username);
 }

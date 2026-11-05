@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
 import static org.hamcrest.Matchers.*;
 
 import java.nio.file.Files;
@@ -296,6 +297,71 @@ class UserControllerTest {
           .content(objectMapper.writeValueAsString(dto))
       )
       .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(username = "user11")
+  void deleteUser_whenExists_return204() throws Exception {
+
+    mockMvc.perform(
+        get(PathConstants.TFG + PathConstants.USER_ROUTE)
+          .param("username", "user11")
+          .param("email", "tfg11@example.com")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+      .andExpect(jsonPath("$.username").value("user11"))
+      .andExpect(jsonPath("$.email").value("tfg11@example.com"));
+
+    mockMvc.perform(
+        delete(PathConstants.TFG + PathConstants.USER_ROUTE + "/me")
+      )
+      .andExpect(status().isNoContent());
+
+    mockMvc.perform(
+        get(PathConstants.TFG + PathConstants.USER_ROUTE)
+          .param("username", "user11")
+          .param("email", "tfg11@example.com")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON))
+      .andExpect(status().isNotFound());
+
+  }
+
+  @Test
+  @WithMockUser(username = "inexistentUser")
+  void deleteUser_whenNotExists_return404() throws Exception {
+
+    mockMvc.perform(
+        delete(PathConstants.TFG + PathConstants.USER_ROUTE + "/me")
+      )
+      .andExpect(status().isNotFound());
+  }
+
+  @WithMockUser(roles = "ADMIN")
+  @Test
+  void deleteUserAsAdmin_whenUserExists_return204() throws Exception {
+
+    mockMvc.perform(delete(PathConstants.TFG + PathConstants.USER_ROUTE + "/user14"))
+      .andExpect(status().isNoContent());
+
+    mockMvc.perform(
+        get(PathConstants.TFG + PathConstants.USER_ROUTE)
+          .param("username", "user14")
+          .param("email", "tfg14@example.com")
+          .contentType(MediaType.APPLICATION_JSON)
+          .accept(MediaType.APPLICATION_JSON))
+      .andExpect(status().isNotFound());
+  }
+
+  @WithMockUser(roles = "ADMIN")
+  @Test
+  void deleteUserAsAdmin_whenUserDoesntExists_return404() throws Exception {
+
+    mockMvc.perform(delete(PathConstants.TFG + PathConstants.USER_ROUTE + "/inexistentUser"))
+      .andExpect(status().isNotFound());
+
   }
 
 

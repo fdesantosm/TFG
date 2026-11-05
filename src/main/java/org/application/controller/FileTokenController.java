@@ -1,7 +1,6 @@
 package org.application.controller;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.application.constant.PathConstants;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

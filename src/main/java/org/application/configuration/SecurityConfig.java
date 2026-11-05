@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.application.constant.PathConstants.USER_ROUTE;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -46,6 +48,7 @@ public class SecurityConfig {
                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                    .requestMatchers(PathConstants.PRUEBA_ROUTE).hasAuthority(AuthorityConstants.ADMIN)
                    .requestMatchers("/tfg/user/all/**").hasAuthority(AuthorityConstants.USER)
+                   .requestMatchers("/tfg" + USER_ROUTE + "/**").hasAuthority(AuthorityConstants.ADMIN)
                    .anyRequest()
                    .authenticated())
                .exceptionHandling(exception -> exception

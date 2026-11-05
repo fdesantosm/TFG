@@ -100,4 +100,13 @@ public class UserServiceImpl implements UserService {
     user.setPassword(passwordEncoder.encode(password.getNewPassword()));
     userRepository.save(user);
   }
+
+  public void deleteUser(String username) {
+
+    UserEntity user = userRepository.findByUsername(username)
+      .orElseThrow(() -> new ResponseException("User not found", HttpStatus.NOT_FOUND));
+
+    userRepository.delete(user);
+  }
+
 }

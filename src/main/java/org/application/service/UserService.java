@@ -17,4 +17,6 @@ public interface UserService {
 
     public void changePassword(String username, PasswordDto password);
 
+    public void deleteUser(String username);
+
 }

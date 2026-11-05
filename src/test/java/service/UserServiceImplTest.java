@@ -222,7 +222,29 @@ class UserServiceImplTest {
     verify(userRepository, never()).save(any());
   }
 
+    @Test
+    void deleteUser_whenUserExists_return204() {
+      UserEntity user = UserEntity.builder()
+        .id(12L)
+        .username("user12")
+        .password("asdfghjkl")
+        .build();
 
+      when(userRepository.findByUsername("user12")).thenReturn(Optional.of(user));
 
-  /// /////Revisar test y hacer los siquientes casos/////
+      userService.deleteUser("user12");
+
+      verify(userRepository).delete(user);
+      verify(userRepository).findByUsername("user12");
+    }
+
+    @Test
+    void deleteUser_whenUserDoesntExists_return404() {
+      when(userRepository.findByUsername("user13")).thenReturn(Optional.empty());
+
+      assertThrows(ResponseException.class, () ->
+        userService.deleteUser("user13")
+      );
+    }
+
 }

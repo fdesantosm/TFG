@@ -55,4 +55,15 @@ public class UserControllerImpl implements UserControllerApi {
         userService.changePassword(user.getUsername(), dto);
         return ResponseEntity.noContent().build();
     }
+    @Override
+    public ResponseEntity<Void> deleteOwnUser(UserDetails userDetails) {
+        userService.deleteUser(userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteUserByAdmin(String username) {
+        userService.deleteUser(username);
+        return ResponseEntity.noContent().build();
+    }
 }
