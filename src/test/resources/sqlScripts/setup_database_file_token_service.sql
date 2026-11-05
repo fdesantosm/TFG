@@ -18,7 +18,7 @@ CREATE SEQUENCE IF NOT EXISTS files_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE IF NOT EXISTS files (
     id BIGINT NOT NULL DEFAULT nextval('files_seq'),
     title VARCHAR(50),
-    file_name VARCHAR(255) NOT NULL UNIQUE,
+    file_name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     public_token VARCHAR(255),
     visible BOOLEAN,

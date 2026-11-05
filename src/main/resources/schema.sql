@@ -18,7 +18,7 @@ CREATE SEQUENCE files_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE IF NOT EXISTS files (
     id BIGINT NOT NULL DEFAULT nextval('files_seq'),
     title VARCHAR(50),
-    file_name VARCHAR(255) NOT NULL UNIQUE,
+    file_name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     public_token VARCHAR(255),
     visible BOOLEAN,
@@ -33,7 +33,6 @@ CREATE SEQUENCE file_tokens_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE IF NOT EXISTS file_tokens (
     id BIGINT NOT NULL DEFAULT nextval('file_tokens_seq'),
     token VARCHAR(255) NOT NULL UNIQUE,
-    file_identifier VARCHAR(255) NOT NULL,
     expiration_time TIMESTAMP NOT NULL,
     file_id BIGINT NOT NULL,
     PRIMARY KEY(id),
